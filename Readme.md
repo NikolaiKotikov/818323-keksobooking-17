@@ -1,7 +1,7 @@
 # Личный проект «Кексобукинг» [![Build status][travis-image]][travis-url]
 
 * Студент: [Николай Котиков](https://up.htmlacademy.ru/javascript/17/user/818323).
-* Наставник: `Неизвестно`.
+* Наставник: [Константин Цуканов](https://htmlacademy.ru/profile/id769011).
 
 ---
 
