@@ -1,9 +1,5 @@
 'use strict';
 
-var map = document.querySelector('.map');
-var mapPins = document.querySelector('.map__pins');
-var pin = document.querySelector('#pin').content;
-
 var TYPES = ['palace', 'flat', 'house', 'bungalo'];
 var PIN_WIDTH = 50;
 var PIN_HEIGHT = 70;
@@ -11,6 +7,14 @@ var MAP_LEFT_BORDER = 0;
 var MAP_RIGHT_BORDER = 1200;
 var MAP_TOP_BORDER = 130;
 var MAP_BOTTOM_BORDER = 630;
+
+var mapPins = document.querySelector('.map__pins');
+var pin = document.querySelector('#pin').content;
+var forms = document.querySelectorAll('form');
+var mapPinMain = document.querySelector('.map__pin--main');
+var map = document.querySelector('.map');
+var adForm = document.querySelector('.ad-form');
+var address = document.querySelector('#address');
 
 /**
  * Функция для создания временного адреса изображения
@@ -36,11 +40,11 @@ var getRandomNumber = function (minNumber, maxNumber) {
 
 /**
  * Функция для получения случайного элемента массива;
- * @param {wizardsay} wizardsay - принимает в качестве аргумента массив;
+ * @param {Array} arr - принимает в качестве аргумента массив;
  * @return {Number} - возвращает случайный элемент;
  */
-var getRandomElement = function (wizardsay) {
-  return wizardsay[getRandomNumber(0, wizardsay.length - 1)];
+var getRandomElement = function (arr) {
+  return arr[getRandomNumber(0, arr.length - 1)];
 };
 
 /**
@@ -99,9 +103,34 @@ var renderMapPin = function (mockData) {
 };
 
 var generatedData = generateMockData(8);
-renderMapPin(generatedData);
 
-// класс .map--faded переключает карту из неактивного состояния в активное,
-// это временное решение для тестирования функции генерации похожих объявлений,
-// в последующих разделах поведение страницы будет запрограммировано полностью.
-map.classList.remove('map--faded');
+
+/**
+ * Добавляет или убирает аттрибут 'disabled' у дочерних элементов форм
+ * @param {Array} arr псевдомассив со всеми найденными формами
+ * @param {Boolean} flag значение 'true' добавляет атрибут, 'false' удаляет его
+ */
+var changeAccessibility = function (arr, flag) {
+  for (var i = 0; i < arr.length; i++) {
+    for (var j = 0; j < arr[i].length; j++) {
+      arr[i][j].disabled = flag;
+    }
+  }
+};
+
+/**
+ * Переводит страницу в активное состояние
+ */
+var activatePage = function () {
+  changeAccessibility(forms, false);
+  renderMapPin(generatedData);
+  map.classList.remove('map--faded');
+  adForm.classList.remove('ad-form--disabled');
+};
+
+changeAccessibility(forms, true);
+mapPinMain.addEventListener('click', function () {
+  activatePage();
+});
+
+address.value = mapPinMain.style.left.slice(0, 3) + ',' + mapPinMain.style.top.slice(0, 3);
