@@ -3,6 +3,15 @@
 var TYPES = ['palace', 'flat', 'house', 'bungalo'];
 var PIN_WIDTH = 50;
 var PIN_HEIGHT = 70;
+var MAIN_PIN_WIDTH = 65;
+var MAIN_PIN_HEIGHT = 65;
+// значениe PIN_TALE_HEIGHT я рассчитал, исходя из CSS свойств элемента '.map__pin--main::after':
+// top: 100%; border-top-width: 22px; transform: translate(-50%, -6px);
+var PIN_TALE_HEIGHT = 16;
+// Начальные координаты '.map__pin--main' вынес в константы,
+// т.к. они не меняются при первой активации страницы
+var MAIN_PIN_START_X = 570;
+var MAIN_PIN_START_Y = 375;
 var MAP_LEFT_BORDER = 0;
 var MAP_RIGHT_BORDER = 1200;
 var MAP_TOP_BORDER = 130;
@@ -10,10 +19,10 @@ var MAP_BOTTOM_BORDER = 630;
 
 var mapPins = document.querySelector('.map__pins');
 var pin = document.querySelector('#pin').content;
-var forms = document.querySelectorAll('form');
 var mapPinMain = document.querySelector('.map__pin--main');
 var map = document.querySelector('.map');
 var adForm = document.querySelector('.ad-form');
+var mapFilters = document.querySelector('.map__filters');
 var address = document.querySelector('#address');
 
 /**
@@ -59,7 +68,10 @@ var generateMockData = function (amount) {
     var data = {
       author: {avatar: getMockSrc(i)},
       offer: {type: getRandomElement(TYPES)},
-      location: {x: getRandomNumber(MAP_LEFT_BORDER, MAP_RIGHT_BORDER), y: getRandomNumber(MAP_TOP_BORDER, MAP_BOTTOM_BORDER)}
+      location: {
+        x: getRandomNumber(MAP_LEFT_BORDER, MAP_RIGHT_BORDER),
+        y: getRandomNumber(MAP_TOP_BORDER, MAP_BOTTOM_BORDER)
+      }
     };
 
     mockAdverts.push(data);
@@ -68,18 +80,28 @@ var generateMockData = function (amount) {
 };
 
 /**
+ * Подготавливает координаты, для подстановки в значение атрибута style
+ * @param {Number} x
+ * @param {Number} y
+ * @return {String}
+ */
+var printCoordinates = function (x, y) {
+  return 'left:' + x + 'px' + ';' + 'top:' + y + 'px' + ';';
+};
+
+/**
  * функция создания DOM-элемента на основе JS-объекта
- * @param {Object} object
+ * @param {Object} mapPin
  * @return {*} - возвращает DOM-элемент
  */
-var createMapPin = function (object) {
+var createMapPin = function (mapPin) {
   var mapPinElement = pin.querySelector('.map__pin').cloneNode(true);
   var img = mapPinElement.querySelector('img');
   var title = document.querySelector('#title').value;
-  var locationX = object.location.x - PIN_WIDTH / 2;
-  var locationY = object.location.y - PIN_HEIGHT;
-  var coordinates = 'left:' + locationX + 'px' + ';' + 'top:' + locationY + 'px' + ';';
-  var src = object.author.avatar;
+  var locationX = mapPin.location.x - PIN_WIDTH / 2;
+  var locationY = mapPin.location.y - PIN_HEIGHT;
+  var coordinates = printCoordinates(locationX, locationY);
+  var src = mapPin.author.avatar;
 
   mapPinElement.style = coordinates;
   img.src = src;
@@ -106,15 +128,14 @@ var generatedData = generateMockData(8);
 
 
 /**
- * Добавляет или убирает аттрибут 'disabled' у дочерних элементов форм
- * @param {Array} arr псевдомассив со всеми найденными формами
+ * Добавляет или убирает аттрибут 'disabled' у дочерних элементов формы
+ * @param {*} form DOM элемент, где форма является родительским элементом,
+ *                 а поля ввода, либо 'fieldset' - его прямыми потомками
  * @param {Boolean} flag значение 'true' добавляет атрибут, 'false' удаляет его
  */
-var changeAccessibility = function (arr, flag) {
-  for (var i = 0; i < arr.length; i++) {
-    for (var j = 0; j < arr[i].length; j++) {
-      arr[i][j].disabled = flag;
-    }
+var changeAccessibility = function (form, flag) {
+  for (var i = 0; i < form.children.length; i++) {
+    form.children[i].disabled = flag;
   }
 };
 
@@ -122,15 +143,37 @@ var changeAccessibility = function (arr, flag) {
  * Переводит страницу в активное состояние
  */
 var activatePage = function () {
-  changeAccessibility(forms, false);
+  changeAccessibility(adForm, false);
+  changeAccessibility(mapFilters, false);
   renderMapPin(generatedData);
   map.classList.remove('map--faded');
   adForm.classList.remove('ad-form--disabled');
 };
 
-changeAccessibility(forms, true);
+/**
+ * Рассчитывает координаты острия метки на основании размеров элемента '.map__pin--main'
+ * @param {Number} x
+ * @param {Number} y
+ * @return {Array} - возвращает массив вида [x, y] c пересчитанными координатами
+ */
+var getNeedlePointСoordinates = function (x, y) {
+  var coordinateX = MAIN_PIN_WIDTH / 2 + x;
+  var coordinateY = MAIN_PIN_HEIGHT + PIN_TALE_HEIGHT + y;
+  return [coordinateX, coordinateY];
+};
+
+changeAccessibility(adForm, true);
+changeAccessibility(mapFilters, true);
 mapPinMain.addEventListener('click', function () {
   activatePage();
 });
 
-address.value = mapPinMain.style.left.slice(0, 3) + ',' + mapPinMain.style.top.slice(0, 3);
+var needlePointСoordinates = getNeedlePointСoordinates(MAIN_PIN_START_X, MAIN_PIN_START_Y);
+address.value = needlePointСoordinates[0] + ', ' + needlePointСoordinates[1];
+
+// Задание 8
+/* var type = document.querySelector('#type');
+var price = document.querySelector('#price');
+type.addEventListener('change', function () {
+  console.log(type.value);
+}); */
