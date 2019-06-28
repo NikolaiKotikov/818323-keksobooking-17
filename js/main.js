@@ -176,7 +176,7 @@ mapPinMain.addEventListener('click', function () {
 });
 
 var needlePointСoordinates = getNeedlePointСoordinates(MAIN_PIN_START_X, MAIN_PIN_START_Y);
-address.value = Math.round(needlePointСoordinates[0]) + ', ' + needlePointСoordinates[1];
+address.value = Math.round(needlePointСoordinates[0]) + ', ' + Math.round(needlePointСoordinates[1]);
 
 // Задание 8
 var type = document.querySelector('#type');
