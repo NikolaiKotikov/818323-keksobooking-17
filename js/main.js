@@ -152,6 +152,7 @@ var activatePage = function () {
   changeAccessibility(adForm, false);
   changeAccessibility(mapFilters, false);
   renderMapPin(generatedData);
+  changePrice();
   map.classList.remove('map--faded');
   adForm.classList.remove('ad-form--disabled');
 };
@@ -175,7 +176,7 @@ mapPinMain.addEventListener('click', function () {
 });
 
 var needlePointСoordinates = getNeedlePointСoordinates(MAIN_PIN_START_X, MAIN_PIN_START_Y);
-address.value = needlePointСoordinates[0] + ', ' + needlePointСoordinates[1];
+address.value = Math.round(needlePointСoordinates[0]) + ', ' + Math.round(needlePointСoordinates[1]);
 
 // Задание 8
 var type = document.querySelector('#type');
