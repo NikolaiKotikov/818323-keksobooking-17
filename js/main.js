@@ -171,14 +171,77 @@ var getNeedlePointСoordinates = function (x, y) {
 
 changeAccessibility(adForm, true);
 changeAccessibility(mapFilters, true);
-mapPinMain.addEventListener('click', function () {
-  activatePage();
+
+mapPinMain.addEventListener('mousedown', function (evt) {
+  evt.preventDefault();
+  /**
+   * Координаты относительно страницы
+   * @param {*} elem DOM элемент, координаты которого нужно вычислить
+   * @return {Object} координаты в формате {top: x, left: y}
+   */
+  var getCoords = function (elem) {
+    var box = elem.getBoundingClientRect();
+
+    return {
+      top: box.top + pageYOffset,
+      left: box.left + pageXOffset
+    };
+  };
+  var pinCoords = getCoords(mapPinMain);
+  var mapCoords = getCoords(map);
+  var pinCoordX = pinCoords.left - mapCoords.left;
+
+  var shift = { // сдвиг курсора относительно элемента
+    x: evt.clientX - pinCoordX,
+    y: evt.clientY - pinCoords.top
+  };
+
+  var onMouseMove = function (moveEvt) {
+    var currentX = moveEvt.clientX - shift.x;
+
+    if (currentX <= MAP_LEFT_BORDER - MAIN_PIN_WIDTH / 2) {
+      currentX = MAP_LEFT_BORDER - MAIN_PIN_WIDTH / 2;
+    }
+    if (currentX >= MAP_RIGHT_BORDER - MAIN_PIN_WIDTH / 2) {
+      currentX = MAP_RIGHT_BORDER - MAIN_PIN_WIDTH / 2;
+    }
+    mapPinMain.style.left = currentX + 'px';
+
+    var currentY = moveEvt.clientY - shift.y;
+
+    if (currentY + MAIN_PIN_HEIGHT + PIN_TALE_HEIGHT <= MAP_TOP_BORDER) {
+      currentY = MAP_TOP_BORDER - MAIN_PIN_HEIGHT - PIN_TALE_HEIGHT;
+    }
+    if (currentY + MAIN_PIN_HEIGHT + PIN_TALE_HEIGHT >= MAP_BOTTOM_BORDER) {
+      currentY = MAP_BOTTOM_BORDER - MAIN_PIN_HEIGHT - PIN_TALE_HEIGHT;
+    }
+    mapPinMain.style.top = currentY + 'px';
+
+    needlePointСoordinates = getNeedlePointСoordinates(currentX, currentY);
+    address.value = Math.round(needlePointСoordinates[0]) + ', ' + Math.round(needlePointСoordinates[1]);
+
+    if (pinCoordX !== currentX || pinCoords.top !== currentY) {
+      if (map.classList.contains('map--faded')) {
+        activatePage();
+      }
+    }
+  };
+
+  var onMouseUp = function (upEvt) {
+    upEvt.preventDefault();
+
+    document.removeEventListener('mousemove', onMouseMove);
+    document.removeEventListener('mouseup', onMouseUp);
+  };
+
+  document.addEventListener('mousemove', onMouseMove);
+  document.addEventListener('mouseup', onMouseUp);
 });
+
 
 var needlePointСoordinates = getNeedlePointСoordinates(MAIN_PIN_START_X, MAIN_PIN_START_Y);
 address.value = Math.round(needlePointСoordinates[0]) + ', ' + Math.round(needlePointСoordinates[1]);
 
-// Задание 8
 var type = document.querySelector('#type');
 var price = document.querySelector('#price');
 var timeIn = document.querySelector('#timein');
