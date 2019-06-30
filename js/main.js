@@ -172,21 +172,50 @@ var getNeedlePointСoordinates = function (x, y) {
 changeAccessibility(adForm, true);
 changeAccessibility(mapFilters, true);
 
+/**
+ * Координаты относительно страницы
+ * @param {*} elem DOM элемент, координаты которого нужно вычислить
+ * @return {Object} координаты в формате {top: x, left: y}
+ */
+var getCoords = function (elem) {
+  var box = elem.getBoundingClientRect();
+  return {
+    top: box.top + pageYOffset,
+    left: box.left + pageXOffset
+  };
+};
+
+/**
+ * Ограничивает текущие координаты размерами карты
+ * @param {Number} x
+ * @param {Number} y
+ * @return {Object} возвращает объект с ограниченными координатами
+ */
+var restrictCoords = function (x, y) {
+  if (x <= MAP_LEFT_BORDER - MAIN_PIN_WIDTH / 2) {
+    x = MAP_LEFT_BORDER - MAIN_PIN_WIDTH / 2;
+  } else if (x >= MAP_RIGHT_BORDER - MAIN_PIN_WIDTH / 2) {
+    x = MAP_RIGHT_BORDER - MAIN_PIN_WIDTH / 2;
+  } else {
+    x = x;
+  }
+
+  if (y + MAIN_PIN_HEIGHT + PIN_TALE_HEIGHT <= MAP_TOP_BORDER) {
+    y = MAP_TOP_BORDER - MAIN_PIN_HEIGHT - PIN_TALE_HEIGHT;
+  } else if (y + MAIN_PIN_HEIGHT + PIN_TALE_HEIGHT >= MAP_BOTTOM_BORDER) {
+    y = MAP_BOTTOM_BORDER - MAIN_PIN_HEIGHT - PIN_TALE_HEIGHT;
+  } else {
+    y = y;
+  }
+  return {
+    restrictedX: x,
+    restrictedY: y
+  };
+};
+
 mapPinMain.addEventListener('mousedown', function (evt) {
   evt.preventDefault();
-  /**
-   * Координаты относительно страницы
-   * @param {*} elem DOM элемент, координаты которого нужно вычислить
-   * @return {Object} координаты в формате {top: x, left: y}
-   */
-  var getCoords = function (elem) {
-    var box = elem.getBoundingClientRect();
 
-    return {
-      top: box.top + pageYOffset,
-      left: box.left + pageXOffset
-    };
-  };
   var pinCoords = getCoords(mapPinMain);
   var mapCoords = getCoords(map);
   var pinCoordX = pinCoords.left - mapCoords.left;
@@ -198,26 +227,14 @@ mapPinMain.addEventListener('mousedown', function (evt) {
 
   var onMouseMove = function (moveEvt) {
     var currentX = moveEvt.clientX - shift.x;
-
-    if (currentX <= MAP_LEFT_BORDER - MAIN_PIN_WIDTH / 2) {
-      currentX = MAP_LEFT_BORDER - MAIN_PIN_WIDTH / 2;
-    }
-    if (currentX >= MAP_RIGHT_BORDER - MAIN_PIN_WIDTH / 2) {
-      currentX = MAP_RIGHT_BORDER - MAIN_PIN_WIDTH / 2;
-    }
-    mapPinMain.style.left = currentX + 'px';
-
     var currentY = moveEvt.clientY - shift.y;
 
-    if (currentY + MAIN_PIN_HEIGHT + PIN_TALE_HEIGHT <= MAP_TOP_BORDER) {
-      currentY = MAP_TOP_BORDER - MAIN_PIN_HEIGHT - PIN_TALE_HEIGHT;
-    }
-    if (currentY + MAIN_PIN_HEIGHT + PIN_TALE_HEIGHT >= MAP_BOTTOM_BORDER) {
-      currentY = MAP_BOTTOM_BORDER - MAIN_PIN_HEIGHT - PIN_TALE_HEIGHT;
-    }
-    mapPinMain.style.top = currentY + 'px';
+    var restrictedCoords = restrictCoords(currentX, currentY);
 
-    needlePointСoordinates = getNeedlePointСoordinates(currentX, currentY);
+    mapPinMain.style.left = restrictedCoords.restrictedX + 'px';
+    mapPinMain.style.top = restrictedCoords.restrictedY + 'px';
+
+    needlePointСoordinates = getNeedlePointСoordinates(restrictedCoords.restrictedX, restrictedCoords.restrictedY);
     address.value = Math.round(needlePointСoordinates[0]) + ', ' + Math.round(needlePointСoordinates[1]);
 
     if (pinCoordX !== currentX || pinCoords.top !== currentY) {
