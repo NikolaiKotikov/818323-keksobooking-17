@@ -171,14 +171,94 @@ var getNeedlePointСoordinates = function (x, y) {
 
 changeAccessibility(adForm, true);
 changeAccessibility(mapFilters, true);
-mapPinMain.addEventListener('click', function () {
-  activatePage();
+
+/**
+ * Координаты относительно страницы
+ * @param {*} elem DOM элемент, координаты которого нужно вычислить
+ * @return {Object} координаты в формате {top: x, left: y}
+ */
+var getCoords = function (elem) {
+  var box = elem.getBoundingClientRect();
+  return {
+    top: box.top + pageYOffset,
+    left: box.left + pageXOffset
+  };
+};
+
+/**
+ * Ограничивает текущие координаты размерами карты
+ * @param {Number} x
+ * @param {Number} y
+ * @return {Object} возвращает объект с ограниченными координатами
+ */
+var restrictCoords = function (x, y) {
+  if (x <= MAP_LEFT_BORDER - MAIN_PIN_WIDTH / 2) {
+    x = MAP_LEFT_BORDER - MAIN_PIN_WIDTH / 2;
+  } else if (x >= MAP_RIGHT_BORDER - MAIN_PIN_WIDTH / 2) {
+    x = MAP_RIGHT_BORDER - MAIN_PIN_WIDTH / 2;
+  } else {
+    x = x;
+  }
+
+  if (y + MAIN_PIN_HEIGHT + PIN_TALE_HEIGHT <= MAP_TOP_BORDER) {
+    y = MAP_TOP_BORDER - MAIN_PIN_HEIGHT - PIN_TALE_HEIGHT;
+  } else if (y + MAIN_PIN_HEIGHT + PIN_TALE_HEIGHT >= MAP_BOTTOM_BORDER) {
+    y = MAP_BOTTOM_BORDER - MAIN_PIN_HEIGHT - PIN_TALE_HEIGHT;
+  } else {
+    y = y;
+  }
+  return {
+    restrictedX: x,
+    restrictedY: y
+  };
+};
+
+mapPinMain.addEventListener('mousedown', function (evt) {
+  evt.preventDefault();
+
+  var pinCoords = getCoords(mapPinMain);
+  var mapCoords = getCoords(map);
+  var pinCoordX = pinCoords.left - mapCoords.left;
+
+  var shift = { // сдвиг курсора относительно элемента
+    x: evt.clientX - pinCoordX,
+    y: evt.clientY - pinCoords.top
+  };
+
+  var onMouseMove = function (moveEvt) {
+    var currentX = moveEvt.clientX - shift.x;
+    var currentY = moveEvt.clientY - shift.y;
+
+    var restrictedCoords = restrictCoords(currentX, currentY);
+
+    mapPinMain.style.left = restrictedCoords.restrictedX + 'px';
+    mapPinMain.style.top = restrictedCoords.restrictedY + 'px';
+
+    needlePointСoordinates = getNeedlePointСoordinates(restrictedCoords.restrictedX, restrictedCoords.restrictedY);
+    address.value = Math.round(needlePointСoordinates[0]) + ', ' + Math.round(needlePointСoordinates[1]);
+
+    if (pinCoordX !== currentX || pinCoords.top !== currentY) {
+      if (map.classList.contains('map--faded')) {
+        activatePage();
+      }
+    }
+  };
+
+  var onMouseUp = function (upEvt) {
+    upEvt.preventDefault();
+
+    document.removeEventListener('mousemove', onMouseMove);
+    document.removeEventListener('mouseup', onMouseUp);
+  };
+
+  document.addEventListener('mousemove', onMouseMove);
+  document.addEventListener('mouseup', onMouseUp);
 });
+
 
 var needlePointСoordinates = getNeedlePointСoordinates(MAIN_PIN_START_X, MAIN_PIN_START_Y);
 address.value = Math.round(needlePointСoordinates[0]) + ', ' + Math.round(needlePointСoordinates[1]);
 
-// Задание 8
 var type = document.querySelector('#type');
 var price = document.querySelector('#price');
 var timeIn = document.querySelector('#timein');
