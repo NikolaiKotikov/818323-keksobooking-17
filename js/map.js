@@ -52,14 +52,18 @@
  * @param {Number} y
  * @return {Array} - возвращает массив вида [x, y] c пересчитанными координатами
  */
-  var getNeedlePointСoordinates = function (x, y) {
+  var getPoint = function (x, y) {
     var coordinateX = deps.globs.MAIN_PIN_WIDTH / 2 + x;
     var coordinateY = deps.globs.MAIN_PIN_HEIGHT + deps.globs.PIN_TALE_HEIGHT + y;
     return [coordinateX, coordinateY];
   };
 
-  var needlePointСoordinates = getNeedlePointСoordinates(deps.globs.MAIN_PIN_START_X, deps.globs.MAIN_PIN_START_Y);
-  address.value = Math.round(needlePointСoordinates[0]) + ', ' + Math.round(needlePointСoordinates[1]);
+  var printCoords = function (x, y) {
+    var pointCoords = getPoint(x, y);
+    address.value = Math.round(pointCoords[0]) + ', ' + Math.round(pointCoords[1]);
+  };
+
+  printCoords(deps.globs.MAIN_PIN_START_X, deps.globs.MAIN_PIN_START_Y);
 
   /**
  * Координаты относительно страницы
@@ -125,8 +129,7 @@
       mapPinMain.style.left = restrictedCoords.restrictedX + 'px';
       mapPinMain.style.top = restrictedCoords.restrictedY + 'px';
 
-      needlePointСoordinates = getNeedlePointСoordinates(restrictedCoords.restrictedX, restrictedCoords.restrictedY);
-      address.value = Math.round(needlePointСoordinates[0]) + ', ' + Math.round(needlePointСoordinates[1]);
+      printCoords(restrictedCoords.restrictedX, restrictedCoords.restrictedY);
 
       if (pinCoordX !== currentX || pinCoords.top !== currentY) {
         if (map.classList.contains('map--faded')) {
