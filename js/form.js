@@ -1,11 +1,11 @@
 'use strict';
 
 (function () {
-
-  var deps = {
-    globs: {
-      PRICES: window.PRICES
-    }
+  var PRICES = {
+    bungalo: '0',
+    flat: '1000',
+    house: '5000',
+    palace: '10000',
   };
 
   var adForm = document.querySelector('.ad-form');
@@ -15,20 +15,32 @@
   var timeIn = document.querySelector('#timein');
   var timeOut = document.querySelector('#timeout');
 
+  window.form = {
+    changeAccessibility: function (form, flag) {
+      for (var i = 0; i < form.children.length; i++) {
+        form.children[i].disabled = flag;
+      }
+    },
+    changePrice: function () {
+      price.setAttribute('min', PRICES[type.value]);
+      price.setAttribute('placeholder', PRICES[type.value]);
+    }
+  };
+
   /**
  * Добавляет или убирает аттрибут 'disabled' у дочерних элементов формы
  * @param {*} form DOM элемент, где форма является родительским элементом,
  *                 а поля ввода, либо 'fieldset' - его прямыми потомками
  * @param {Boolean} flag значение 'true' добавляет атрибут, 'false' удаляет его
  */
-  window.changeAccessibility = function (form, flag) {
+  window.form.changeAccessibility = function (form, flag) {
     for (var i = 0; i < form.children.length; i++) {
       form.children[i].disabled = flag;
     }
   };
 
-  window.changeAccessibility(adForm, true);
-  window.changeAccessibility(mapFilters, true);
+  window.form.changeAccessibility(adForm, true);
+  window.form.changeAccessibility(mapFilters, true);
 
   /**
  * Синхронизирует поля firstSelect и secondSelect:
@@ -52,9 +64,9 @@
  * меняются значения атрибутов 'min' и 'placeholder';
  * зависимость значений хранится в 'PRICES'
  */
-  window.changePrice = function () {
-    price.setAttribute('min', deps.globs.PRICES[type.value]);
-    price.setAttribute('placeholder', deps.globs.PRICES[type.value]);
+  window.form.changePrice = function () {
+    price.setAttribute('min', PRICES[type.value]);
+    price.setAttribute('placeholder', PRICES[type.value]);
   };
 
   timeIn.addEventListener('change', function () {
@@ -66,6 +78,6 @@
   });
 
   type.addEventListener('change', function () {
-    window.changePrice();
+    window.form.changePrice();
   });
 })();

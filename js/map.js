@@ -1,30 +1,11 @@
 'use strict';
 
 (function () {
-
-  var deps = {
-    globs: {
-      MAIN_PIN_WIDTH: window.MAIN_PIN_WIDTH,
-      MAIN_PIN_HEIGHT: window.MAIN_PIN_HEIGHT,
-      PIN_TALE_HEIGHT: window.PIN_TALE_HEIGHT,
-      MAP_LEFT_BORDER: window.MAP_LEFT_BORDER,
-      MAP_RIGHT_BORDER: window.MAP_RIGHT_BORDER,
-      MAP_TOP_BORDER: window.MAP_TOP_BORDER,
-      MAP_BOTTOM_BORDER: window.MAP_BOTTOM_BORDER,
-      MAIN_PIN_START_X: window.MAIN_PIN_START_X,
-      MAIN_PIN_START_Y: window.MAIN_PIN_START_Y
-    },
-    form: {
-      changeAccessibility: window.changeAccessibility,
-      changePrice: window.changePrice
-    },
-    pin: {
-      renderMapPin: window.renderMapPin
-    },
-    data: {
-      generateMockData: window.generateMockData
-    }
-  };
+  var MAIN_PIN_WIDTH = 65;
+  var MAIN_PIN_HEIGHT = 65;
+  var MAIN_PIN_START_X = 570;
+  var MAIN_PIN_START_Y = 375;
+  var PIN_TALE_HEIGHT = 16;
 
   var mapPinMain = document.querySelector('.map__pin--main');
   var map = document.querySelector('.map');
@@ -32,16 +13,16 @@
   var adForm = document.querySelector('.ad-form');
   var mapFilters = document.querySelector('.map__filters');
 
-  var generatedData = deps.data.generateMockData(8);
+  var generatedData = window.generateMockData(8);
 
   /**
  * Переводит страницу в активное состояние
  */
   var activatePage = function () {
-    deps.form.changeAccessibility(adForm, false);
-    deps.form.changeAccessibility(mapFilters, false);
-    deps.pin.renderMapPin(generatedData);
-    deps.form.changePrice();
+    window.form.changeAccessibility(adForm, false);
+    window.form.changeAccessibility(mapFilters, false);
+    window.renderMapPin(generatedData);
+    window.form.changePrice();
     map.classList.remove('map--faded');
     adForm.classList.remove('ad-form--disabled');
   };
@@ -53,8 +34,8 @@
  * @return {Array} - возвращает массив вида [x, y] c пересчитанными координатами
  */
   var getPoint = function (x, y) {
-    var coordinateX = deps.globs.MAIN_PIN_WIDTH / 2 + x;
-    var coordinateY = deps.globs.MAIN_PIN_HEIGHT + deps.globs.PIN_TALE_HEIGHT + y;
+    var coordinateX = MAIN_PIN_WIDTH / 2 + x;
+    var coordinateY = MAIN_PIN_HEIGHT + PIN_TALE_HEIGHT + y;
     return [coordinateX, coordinateY];
   };
 
@@ -63,7 +44,7 @@
     address.value = Math.round(pointCoords[0]) + ', ' + Math.round(pointCoords[1]);
   };
 
-  printCoords(deps.globs.MAIN_PIN_START_X, deps.globs.MAIN_PIN_START_Y);
+  printCoords(MAIN_PIN_START_X, MAIN_PIN_START_Y);
 
   /**
  * Координаты относительно страницы
@@ -86,18 +67,18 @@
    */
 
   var restrictCoords = function (x, y) {
-    if (x <= deps.globs.MAP_LEFT_BORDER - deps.globs.MAIN_PIN_WIDTH / 2) {
-      x = deps.globs.MAP_LEFT_BORDER - deps.globs.MAIN_PIN_WIDTH / 2;
-    } else if (x >= deps.globs.MAP_RIGHT_BORDER - deps.globs.MAIN_PIN_WIDTH / 2) {
-      x = deps.globs.MAP_RIGHT_BORDER - deps.globs.MAIN_PIN_WIDTH / 2;
+    if (x <= window.data.MAP_LEFT_BORDER - MAIN_PIN_WIDTH / 2) {
+      x = window.data.MAP_LEFT_BORDER - MAIN_PIN_WIDTH / 2;
+    } else if (x >= window.data.MAP_RIGHT_BORDER - MAIN_PIN_WIDTH / 2) {
+      x = window.data.MAP_RIGHT_BORDER - MAIN_PIN_WIDTH / 2;
     } else {
       x = x;
     }
 
-    if (y + deps.globs.MAIN_PIN_HEIGHT + deps.globs.PIN_TALE_HEIGHT <= deps.globs.MAP_TOP_BORDER) {
-      y = deps.globs.MAP_TOP_BORDER - deps.globs.MAIN_PIN_HEIGHT - deps.globs.PIN_TALE_HEIGHT;
-    } else if (y + deps.globs.MAIN_PIN_HEIGHT + deps.globs.PIN_TALE_HEIGHT >= deps.globs.MAP_BOTTOM_BORDER) {
-      y = deps.globs.MAP_BOTTOM_BORDER - deps.globs.MAIN_PIN_HEIGHT - deps.globs.PIN_TALE_HEIGHT;
+    if (y + MAIN_PIN_HEIGHT + PIN_TALE_HEIGHT <= window.data.MAP_TOP_BORDER) {
+      y = window.data.MAP_TOP_BORDER - MAIN_PIN_HEIGHT - PIN_TALE_HEIGHT;
+    } else if (y + MAIN_PIN_HEIGHT + PIN_TALE_HEIGHT >= window.data.MAP_BOTTOM_BORDER) {
+      y = window.data.MAP_BOTTOM_BORDER - MAIN_PIN_HEIGHT - PIN_TALE_HEIGHT;
     } else {
       y = y;
     }

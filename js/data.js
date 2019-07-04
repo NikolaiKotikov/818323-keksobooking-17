@@ -1,20 +1,14 @@
 'use strict';
 
 (function () {
-
-  var deps = {
-    tools: {
-      getRandomElement: window.getRandomElement,
-      getRandomNumber: window.getRandomNumber
-    },
-    globs: {
-      TYPES: window.TYPES,
-      MAP_LEFT_BORDER: window.MAP_LEFT_BORDER,
-      MAP_RIGHT_BORDER: window.MAP_RIGHT_BORDER,
-      MAP_TOP_BORDER: window.MAP_TOP_BORDER,
-      MAP_BOTTOM_BORDER: window.MAP_BOTTOM_BORDER
-    }
+  window.data = {
+    MAP_LEFT_BORDER: 0,
+    MAP_RIGHT_BORDER: 1200,
+    MAP_TOP_BORDER: 130,
+    MAP_BOTTOM_BORDER: 630
   };
+
+  var TYPES = ['palace', 'flat', 'house', 'bungalo'];
 
   /**
  * Функция для создания временного адреса изображения
@@ -39,10 +33,10 @@
     for (var i = 0; i < amount; i++) {
       var data = {
         author: {avatar: getMockSrc(i)},
-        offer: {type: deps.tools.getRandomElement(deps.globs.TYPES)},
+        offer: {type: window.tools.getRandomElement(TYPES)},
         location: {
-          x: deps.tools.getRandomNumber(deps.globs.MAP_LEFT_BORDER, deps.globs.MAP_RIGHT_BORDER),
-          y: deps.tools.getRandomNumber(deps.globs.MAP_TOP_BORDER, deps.globs.MAP_BOTTOM_BORDER)
+          x: window.tools.getRandomNumber(window.data.MAP_LEFT_BORDER, window.data.MAP_RIGHT_BORDER),
+          y: window.tools.getRandomNumber(window.data.MAP_TOP_BORDER, window.data.MAP_BOTTOM_BORDER)
         }
       };
 

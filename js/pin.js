@@ -1,13 +1,8 @@
 'use strict';
 
 (function () {
-
-  var deps = {
-    globs: {
-      PIN_WIDTH: window.PIN_WIDTH,
-      PIN_HEIGHT: window.PIN_HEIGHT
-    }
-  };
+  var PIN_WIDTH = 50;
+  var PIN_HEIGHT = 70;
 
   var mapPins = document.querySelector('.map__pins');
   var pin = document.querySelector('#pin').content;
@@ -30,8 +25,8 @@
     var mapPinElement = pin.querySelector('.map__pin').cloneNode(true);
     var img = mapPinElement.querySelector('img');
     var title = document.querySelector('#title').value;
-    var locationX = mapPin.location.x - deps.globs.PIN_WIDTH / 2;
-    var locationY = mapPin.location.y - deps.globs.PIN_HEIGHT;
+    var locationX = mapPin.location.x - PIN_WIDTH / 2;
+    var locationY = mapPin.location.y - PIN_HEIGHT;
     var coordinates = printCoordinates(locationX, locationY);
     var src = mapPin.author.avatar;
 
