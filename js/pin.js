@@ -39,13 +39,13 @@
 
   /**
  * функция заполнения блока DOM-элементами на основе массива JS-объектов
- * @param {Array} mockData
+ * @param {Array} data
  */
-  window.renderMapPin = function (mockData) {
+  window.onSuccessLoad = function (data) {
     var fragment = document.createDocumentFragment();
 
-    for (var i = 0; i < mockData.length; i++) {
-      fragment.appendChild(createMapPin(mockData[i]));
+    for (var i = 0; i < data.length; i++) {
+      fragment.appendChild(createMapPin(data[i]));
     }
 
     mapPins.appendChild(fragment);

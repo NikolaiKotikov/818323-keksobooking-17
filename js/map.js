@@ -6,6 +6,10 @@
   var MAIN_PIN_START_X = 570;
   var MAIN_PIN_START_Y = 375;
   var PIN_TALE_HEIGHT = 16;
+  var MAP_LEFT_BORDER = 0;
+  var MAP_RIGHT_BORDER = 1200;
+  var MAP_TOP_BORDER = 130;
+  var MAP_BOTTOM_BORDER = 630;
 
   var mapPinMain = document.querySelector('.map__pin--main');
   var map = document.querySelector('.map');
@@ -13,7 +17,11 @@
   var adForm = document.querySelector('.ad-form');
   var mapFilters = document.querySelector('.map__filters');
 
-  var generatedData = window.generateMockData(8);
+  var onErrorLoad = function () {
+    var error = document.querySelector('#error').content;
+    var main = document.querySelector('main');
+    main.appendChild(error);
+  };
 
   /**
  * Переводит страницу в активное состояние
@@ -21,7 +29,7 @@
   var activatePage = function () {
     window.form.changeAccessibility(adForm, false);
     window.form.changeAccessibility(mapFilters, false);
-    window.renderMapPin(generatedData);
+    window.load(window.onSuccessLoad, onErrorLoad);
     window.form.changePrice();
     map.classList.remove('map--faded');
     adForm.classList.remove('ad-form--disabled');
@@ -67,18 +75,18 @@
    */
 
   var restrictCoords = function (x, y) {
-    if (x <= window.data.MAP_LEFT_BORDER - MAIN_PIN_WIDTH / 2) {
-      x = window.data.MAP_LEFT_BORDER - MAIN_PIN_WIDTH / 2;
-    } else if (x >= window.data.MAP_RIGHT_BORDER - MAIN_PIN_WIDTH / 2) {
-      x = window.data.MAP_RIGHT_BORDER - MAIN_PIN_WIDTH / 2;
+    if (x <= MAP_LEFT_BORDER - MAIN_PIN_WIDTH / 2) {
+      x = MAP_LEFT_BORDER - MAIN_PIN_WIDTH / 2;
+    } else if (x >= MAP_RIGHT_BORDER - MAIN_PIN_WIDTH / 2) {
+      x = MAP_RIGHT_BORDER - MAIN_PIN_WIDTH / 2;
     } else {
       x = x;
     }
 
-    if (y + MAIN_PIN_HEIGHT + PIN_TALE_HEIGHT <= window.data.MAP_TOP_BORDER) {
-      y = window.data.MAP_TOP_BORDER - MAIN_PIN_HEIGHT - PIN_TALE_HEIGHT;
-    } else if (y + MAIN_PIN_HEIGHT + PIN_TALE_HEIGHT >= window.data.MAP_BOTTOM_BORDER) {
-      y = window.data.MAP_BOTTOM_BORDER - MAIN_PIN_HEIGHT - PIN_TALE_HEIGHT;
+    if (y + MAIN_PIN_HEIGHT + PIN_TALE_HEIGHT <= MAP_TOP_BORDER) {
+      y = MAP_TOP_BORDER - MAIN_PIN_HEIGHT - PIN_TALE_HEIGHT;
+    } else if (y + MAIN_PIN_HEIGHT + PIN_TALE_HEIGHT >= MAP_BOTTOM_BORDER) {
+      y = MAP_BOTTOM_BORDER - MAIN_PIN_HEIGHT - PIN_TALE_HEIGHT;
     } else {
       y = y;
     }
