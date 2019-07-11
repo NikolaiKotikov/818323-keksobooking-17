@@ -16,7 +16,10 @@
   var address = document.querySelector('#address');
   var adForm = document.querySelector('.ad-form');
   var mapFilters = document.querySelector('.map__filters');
-
+  var maxLeftCoord = MAP_LEFT_BORDER - MAIN_PIN_WIDTH / 2;
+  var maxRightCoord = MAP_RIGHT_BORDER - MAIN_PIN_WIDTH / 2;
+  var maxTopCoord = MAP_TOP_BORDER - MAIN_PIN_HEIGHT - PIN_TALE_HEIGHT;
+  var maxBottomCoord = MAP_BOTTOM_BORDER - MAIN_PIN_HEIGHT - PIN_TALE_HEIGHT;
   var onErrorLoad = function () {
     var error = document.querySelector('#error').content;
     var main = document.querySelector('main');
@@ -68,32 +71,21 @@
   };
 
     /**
-   * Ограничивает текущие координаты размерами карты
-   * @param {Number} x
-   * @param {Number} y
-   * @return {Object} возвращает объект с ограниченными координатами
+   * Ограничивает переданный аргумент заданными значениями
+   * @param {Number} argument - значение, которое необходимо ограничить
+   * @param {Number} minValue - минимальное значение
+   * @param {Number} maxValue - максимальное значение
+   * @return {Number} возвращает аргумент, значение которого находится в заданном диапазоне
    */
 
-  var restrictCoords = function (x, y) {
-    if (x <= MAP_LEFT_BORDER - MAIN_PIN_WIDTH / 2) {
-      x = MAP_LEFT_BORDER - MAIN_PIN_WIDTH / 2;
-    } else if (x >= MAP_RIGHT_BORDER - MAIN_PIN_WIDTH / 2) {
-      x = MAP_RIGHT_BORDER - MAIN_PIN_WIDTH / 2;
-    } else {
-      x = x;
+  var restrictCoords = function (argument, minValue, maxValue) {
+    if (argument <= minValue) {
+      argument = minValue;
+    } else if (argument >= maxValue) {
+      argument = maxValue;
     }
 
-    if (y + MAIN_PIN_HEIGHT + PIN_TALE_HEIGHT <= MAP_TOP_BORDER) {
-      y = MAP_TOP_BORDER - MAIN_PIN_HEIGHT - PIN_TALE_HEIGHT;
-    } else if (y + MAIN_PIN_HEIGHT + PIN_TALE_HEIGHT >= MAP_BOTTOM_BORDER) {
-      y = MAP_BOTTOM_BORDER - MAIN_PIN_HEIGHT - PIN_TALE_HEIGHT;
-    } else {
-      y = y;
-    }
-    return {
-      restrictedX: x,
-      restrictedY: y
-    };
+    return argument;
   };
 
   mapPinMain.addEventListener('mousedown', function (evt) {
@@ -113,12 +105,13 @@
       var currentX = moveEvt.clientX - shift.x;
       var currentY = moveEvt.clientY - shift.y;
 
-      var restrictedCoords = restrictCoords(currentX, currentY);
+      var restrictedX = restrictCoords(currentX, maxLeftCoord, maxRightCoord);
+      var restrictedY = restrictCoords(currentY, maxTopCoord, maxBottomCoord);
 
-      mapPinMain.style.left = restrictedCoords.restrictedX + 'px';
-      mapPinMain.style.top = restrictedCoords.restrictedY + 'px';
+      mapPinMain.style.left = restrictedX + 'px';
+      mapPinMain.style.top = restrictedY + 'px';
 
-      printCoords(restrictedCoords.restrictedX, restrictedCoords.restrictedY);
+      printCoords(restrictedX, restrictedY);
 
       if (pinCoordX !== currentX || pinCoords.top !== currentY) {
         if (map.classList.contains('map--faded')) {
