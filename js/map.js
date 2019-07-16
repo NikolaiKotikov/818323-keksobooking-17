@@ -32,7 +32,7 @@
   var activatePage = function () {
     window.form.changeAccessibility(adForm, false);
     window.form.changeAccessibility(mapFilters, false);
-    window.load(window.onSuccessLoad, onErrorLoad);
+    window.load(window.pin.onSuccessLoad, onErrorLoad);
     window.form.changePrice();
     map.classList.remove('map--faded');
     adForm.classList.remove('ad-form--disabled');

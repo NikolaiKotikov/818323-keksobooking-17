@@ -6,6 +6,8 @@
 
   var mapPins = document.querySelector('.map__pins');
   var pin = document.querySelector('#pin').content;
+
+  window.pin = {};
   /**
  * Подготавливает координаты, для подстановки в значение атрибута src:
  * @param {Number} x
@@ -31,6 +33,7 @@
     var src = mapPin.author.avatar;
 
     mapPinElement.style = coordinates;
+    mapPinElement.classList.add('created');
     img.src = src;
     img.alt = title;
 
@@ -41,13 +44,34 @@
  * функция заполнения блока DOM-элементами на основе массива JS-объектов
  * @param {Array} data
  */
-  window.onSuccessLoad = function (data) {
+  var renderPins = function (data) {
     var fragment = document.createDocumentFragment();
-
-    for (var i = 0; i < data.length; i++) {
+    var takeNumber = data.length > 5 ? 5 : data.length;
+    for (var i = 0; i < takeNumber; i++) {
       fragment.appendChild(createMapPin(data[i]));
     }
 
     mapPins.appendChild(fragment);
   };
+
+  var removePins = function () {
+    var createdElements = document.querySelectorAll('.created');
+    createdElements.forEach(function (item) {
+      item.remove();
+    });
+  };
+
+  window.pin.updatePins = function (type) {
+    var filteredPins = window.pins.filter(function (it) {
+      return it.offer.type === type.value;
+    });
+    removePins();
+    renderPins(filteredPins);
+  };
+
+  window.pin.onSuccessLoad = function (data) {
+    window.pins = data;
+    renderPins(window.pins);
+  };
+
 })();
