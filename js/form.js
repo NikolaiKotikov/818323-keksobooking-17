@@ -79,6 +79,5 @@
 
   type.addEventListener('change', function () {
     window.form.changePrice();
-    window.pin.updatePins(type);
   });
 })();

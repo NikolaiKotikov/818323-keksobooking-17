@@ -61,7 +61,7 @@
     });
   };
 
-  window.pin.updatePins = function (type) {
+  var updatePins = function (type) {
     var filteredPins = window.pins.filter(function (it) {
       return it.offer.type === type.value;
     });
@@ -69,9 +69,14 @@
     renderPins(filteredPins);
   };
 
-  window.pin.onSuccessLoad = function (data) {
+  var onSuccessLoad = function (data) {
     window.pins = data;
     renderPins(window.pins);
+  };
+
+  window.pin = {
+    updatePins: updatePins,
+    onSuccessLoad: onSuccessLoad
   };
 
 })();
