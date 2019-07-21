@@ -63,6 +63,9 @@
 
   var updatePins = function (type) {
     var filteredPins = window.pins.filter(function (it) {
+      if (type.value === 'any') {
+        return true;
+      }
       return it.offer.type === type.value;
     });
     removePins();
